@@ -9,6 +9,7 @@
             height: 100
         ));
     }
+    @include render-layout;
     @include assert-equal((100, 100, 0, 0), render-node(".root"));
   }
 }

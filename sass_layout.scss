@@ -3,11 +3,18 @@ $global-frame-map: () !global;
 @import "_util";
 
 @mixin layout($layout) {
-    $current-node: #{&} !default;
+  $current-node: #{&} !default;
 
-    $layout: layout-property("margin", $layout);
-    $layout: layout-property("padding", $layout);
-    $layout: map-set($layout, parent-selector, parent-node($current-node));
+  $layout: layout-property("margin", $layout);
+  $layout: layout-property("padding", $layout);
+  $layout: map-set($layout, parent-selector, parent-node($current-node));
 
-    @include save-layout($current-node, $layout);
+  @include save-layout($current-node, $layout);
+}
+
+@mixin render-layout() {
+  @each $node, $layout in $global-frame-map {
+    $layout: map-merge($layout, (top: 0, left: 0));
+    $global-frame-map: map-set($global-frame-map, $node, $layout) !global;
+  }
 }
