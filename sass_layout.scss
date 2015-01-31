@@ -5,10 +5,6 @@ $global-frame-map: () !global;
   @return map-merge($map, $new);
 }
 
-@function fake() {
-    @return 123;
-}
-
 @mixin save-layout($node, $layout) {
     $global-frame-map: map-set($global-frame-map, $node, $layout) !global;
 }
@@ -17,48 +13,34 @@ $global-frame-map: () !global;
     @return map-get($global-frame-map, $node);
 }
 
-@function layout-margin($layout) {
-    @if map-get($layout, margin) == null {
-        $layout: map-set($layout, margin, 0);
+@function layout-property($property-name, $layout) {
+    @if map-get($layout, #{$property-name}) == null {
+        $layout: map-set($layout, #{$property-name}, 0);
     }
-    $margin: map-get($layout, margin);
-    @if length($margin) == 1 { $margin: ($margin, $margin, $margin, $margin); }
-    @if length($margin) == 2 { $margin: join($margin, $margin); }
-    @if length($margin) == 3 { $margin: join($margin, nth($margin, 2)); }
-    @if map-get($layout, margin-top) == null { $layout: map-set($layout, margin-top, nth($margin, 1)); }
-    @if map-get($layout, margin-right) == null { $layout: map-set($layout, margin-right, nth($margin, 2)); }
-    @if map-get($layout, margin-bottom) == null { $layout: map-set($layout, margin-bottom, nth($margin, 3)); }
-    @if map-get($layout, margin-left) == null { $layout: map-set($layout, margin-left, nth($margin, 4)); }
+    $property: map-get($layout, #{$property-name});
+    @if length($property) == 1 { $property: ($property, $property, $property, $property); }
+    @if length($property) == 2 { $property: join($property, $property); }
+    @if length($property) == 3 { $property: join($property, nth($property, 2)); }
+    /*$layout: map-set($layout, #{$property-name}-top, 100); }*/
+    @if map-get($layout, #{$property-name}-top) == null { $layout: map-set($layout, #{$property-name}-top, nth($property, 1)); }
+    @if map-get($layout, #{$property-name}-right) == null { $layout: map-set($layout, #{$property-name}-right, nth($property, 2)); }
+    @if map-get($layout, #{$property-name}-bottom) == null { $layout: map-set($layout, #{$property-name}-bottom, nth($property, 3)); }
+    @if map-get($layout, #{$property-name}-left) == null { $layout: map-set($layout, #{$property-name}-left, nth($property, 4)); }
     @return $layout;
 }
-
-@function layout-padding($layout) {
-    @if map-get($layout, padding) == null {
-        $layout: map-set($layout, padding, 0);
-    }
-    $padding: map-get($layout, padding);
-    @if length($padding) == 1 { $padding: ($padding, $padding, $padding, $padding); }
-    @if length($padding) == 2 { $padding: join($padding, $padding); }
-    @if length($padding) == 3 { $padding: join($padding, nth($padding, 2)); }
-    @if map-get($layout, padding-top) == null { $layout: map-set($layout, padding-top, nth($padding, 1)); }
-    @if map-get($layout, padding-right) == null { $layout: map-set($layout, padding-right, nth($padding, 2)); }
-    @if map-get($layout, padding-bottom) == null { $layout: map-set($layout, padding-bottom, nth($padding, 3)); }
-    @if map-get($layout, padding-left) == null { $layout: map-set($layout, padding-left, nth($padding, 4)); }
-    @return $layout;
-}
-
 
 @mixin layout($layout) {
     $current-node: #{&} !default;
 
-    $layout: layout-margin($layout);
-    $layout: layout-padding($layout);
+    $layout: layout-property("margin", $layout);
+    $layout: layout-property("padding", $layout);
 
     $parent-layout: get-layout(parent-node($current-node));
 
     @include save-layout($current-node, $layout);
 
     @if $parent-layout != null {
+        margin: map-get($layout, margin);
         margin-top: map-get($layout, margin-top);
         margin-right: map-get($layout, margin-right);
         margin-bottom: map-get($layout, margin-bottom);
