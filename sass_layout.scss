@@ -1,0 +1,91 @@
+$global-frame-map: () !global;
+
+@function map-set($map, $key, $value) {
+  $new: ($key: $value);
+  @return map-merge($map, $new);
+}
+
+@function fake() {
+    @return 123;
+}
+
+@mixin save-layout($node, $layout) {
+    $global-frame-map: map-set($global-frame-map, $node, $layout) !global;
+}
+
+@function get-layout($node) {
+    @return map-get($global-frame-map, $node);
+}
+
+@function layout-margin($layout) {
+    @if map-get($layout, margin) == null {
+        $layout: map-set($layout, margin, 0);
+    }
+    $margin: map-get($layout, margin);
+    @if length($margin) == 1 { $margin: ($margin, $margin, $margin, $margin); }
+    @if length($margin) == 2 { $margin: join($margin, $margin); }
+    @if length($margin) == 3 { $margin: join($margin, nth($margin, 2)); }
+    @if map-get($layout, margin-top) == null { $layout: map-set($layout, margin-top, nth($margin, 1)); }
+    @if map-get($layout, margin-right) == null { $layout: map-set($layout, margin-right, nth($margin, 2)); }
+    @if map-get($layout, margin-bottom) == null { $layout: map-set($layout, margin-bottom, nth($margin, 3)); }
+    @if map-get($layout, margin-left) == null { $layout: map-set($layout, margin-left, nth($margin, 4)); }
+    @return $layout;
+}
+
+@function layout-padding($layout) {
+    @if map-get($layout, padding) == null {
+        $layout: map-set($layout, padding, 0);
+    }
+    $padding: map-get($layout, padding);
+    @if length($padding) == 1 { $padding: ($padding, $padding, $padding, $padding); }
+    @if length($padding) == 2 { $padding: join($padding, $padding); }
+    @if length($padding) == 3 { $padding: join($padding, nth($padding, 2)); }
+    @if map-get($layout, padding-top) == null { $layout: map-set($layout, padding-top, nth($padding, 1)); }
+    @if map-get($layout, padding-right) == null { $layout: map-set($layout, padding-right, nth($padding, 2)); }
+    @if map-get($layout, padding-bottom) == null { $layout: map-set($layout, padding-bottom, nth($padding, 3)); }
+    @if map-get($layout, padding-left) == null { $layout: map-set($layout, padding-left, nth($padding, 4)); }
+    @return $layout;
+}
+
+
+@mixin layout($layout) {
+    $current-node: #{&} !default;
+
+    $layout: layout-margin($layout);
+    $layout: layout-padding($layout);
+
+    $parent-layout: get-layout(parent-node($current-node));
+
+    @include save-layout($current-node, $layout);
+
+    @if $parent-layout != null {
+        top: 123;
+        bottom: 123;
+        margin-top: map-get($layout, margin-top);
+        margin-right: map-get($layout, margin-right);
+        margin-bottom: map-get($layout, margin-bottom);
+        margin-left: map-get($layout, margin-left);
+        padding-top: map-get($layout, padding-top);
+        padding-right: map-get($layout, padding-right);
+        padding-bottom: map-get($layout, padding-bottom);
+        padding-left: map-get($layout, padding-left);
+    }
+
+}
+
+@function parent-node($current-node) {
+    $selector-list: nth(selector-parse($current-node), 1);
+    $selector-length: length($selector-list);
+    @if $selector-length < 2 {
+        @return "";
+    }
+    $parent-selector: nth($selector-list, 1);
+    @if $selector-length == 2 {
+      @return $parent-selector;
+    }
+    @for $i from 2 through ($selector-length - 1){
+        $parent-selector: selector-nest($parent-selector, nth($selector-list, $i));
+    }
+    @return #{$parent-selector};
+}
+
