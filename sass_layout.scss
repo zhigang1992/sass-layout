@@ -59,8 +59,6 @@ $global-frame-map: () !global;
     @include save-layout($current-node, $layout);
 
     @if $parent-layout != null {
-        top: 123;
-        bottom: 123;
         margin-top: map-get($layout, margin-top);
         margin-right: map-get($layout, margin-right);
         margin-bottom: map-get($layout, margin-bottom);
