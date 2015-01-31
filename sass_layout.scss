@@ -25,13 +25,19 @@ $global-frame-map: () !global;
   @each $selector, $node in root-nodes() {
     $node: map-merge($node, (top: 0, left: 0));
     @include save-layout($selector, $node);
+    @include render-child-layout($node);
+  }
+}
 
-    $parent-top: map-get($node, top);
+@mixin render-child-layout($node) {
+  @if length(map-get($node, child_nodes)) > 0 {
+    $parent-top: 0;
     @each $child_selector in map-get($node, child_nodes) {
       $child_node: get-layout($child_selector);
       $child_node: map-merge($child_node, (top: $parent-top, left: 0));
       $parent-top: $parent-top + map-get($child_node, height);
       @include save-layout($child_selector, $child_node);
+      @include render-child-layout($child_node);
     }
   }
 }

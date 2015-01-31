@@ -21,6 +21,22 @@
     @include assert-equal(render-node(".root .child_b"), (250, 250, 500, 0));
     @include assert-equal(render-node(".root .child_c"), (125, 125, 750, 0));
   }
+
+  @include test('should layout node with nested children') {
+    .r {
+      @include layout(( width:  1000, height: 1000));
+      .c_a { @include layout(( width: 500, height: 500 )); }
+      .c_b {
+        @include layout(( width: 500, height: 500 ));
+        .cc_a { @include layout((width: 250, height: 250)) }
+        .cc_b { @include layout((width: 250, height: 250)) }
+      }
+    }
+    @include render-layout;
+    @include assert-equal(render-node(".r .c_b"), (500, 500, 500, 0));
+    @include assert-equal(render-node(".r .c_b .cc_a"), (250, 250, 0, 0));
+    @include assert-equal(render-node(".r .c_b .cc_b"), (250, 250, 250, 0));
+  }
 }
 
 
