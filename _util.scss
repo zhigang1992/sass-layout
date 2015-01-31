@@ -36,7 +36,7 @@
     @return $layout;
 }
 
-@function parent-node($current-node) {
+@function parent-selector($current-node) {
     $selector-list: nth(selector-parse($current-node), 1);
     $selector-length: length($selector-list);
     @if $selector-length < 2 {

@@ -7,14 +7,41 @@ $global-frame-map: () !global;
 
   $layout: layout-property("margin", $layout);
   $layout: layout-property("padding", $layout);
-  $layout: map-set($layout, parent-selector, parent-node($current-node));
+  $layout: map-merge($layout, (child_nodes: ()));
+  $parent-selector: parent-selector($current-node);
+  $layout: map-set($layout, parent-selector, $parent-selector);
+  $parent-node: get-layout($parent-selector);
+
+  @if $parent-node != null {
+    $siblings: map-get($parent-node, child_nodes);
+    $parent-node: map-set($parent-node, child_nodes, append($siblings, $current-node));
+    @include save-layout($parent-selector, $parent-node);
+  }
 
   @include save-layout($current-node, $layout);
 }
 
 @mixin render-layout() {
-  @each $node, $layout in $global-frame-map {
-    $layout: map-merge($layout, (top: 0, left: 0));
-    $global-frame-map: map-set($global-frame-map, $node, $layout) !global;
+  @each $selector, $node in root-nodes() {
+    $node: map-merge($node, (top: 0, left: 0));
+    @include save-layout($selector, $node);
+
+    $parent-top: map-get($node, top);
+    @each $child_selector in map-get($node, child_nodes) {
+      $child_node: get-layout($child_selector);
+      $child_node: map-merge($child_node, (top: $parent-top, left: 0));
+      $parent-top: $parent-top + map-get($child_node, height);
+      @include save-layout($child_selector, $child_node);
+    }
   }
+}
+
+@function root-nodes() {
+  $root-nodes: ();
+  @each $selector, $node in $global-frame-map {
+    @if map-get($node, parent-selector) == "" {
+      $root-nodes: map-set($root-nodes, $selector, $node);
+    }
+  }
+  @return $root-nodes;
 }

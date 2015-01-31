@@ -5,21 +5,21 @@
   @include test('should layout a single node with width and height') {
     .root { @include layout((width: 100, height: 100)); }
     @include render-layout;
-    @include assert-equal((100, 100, 0, 0), render-node(".root"));
+    @include assert-equal(render-node(".root"), (100, 100, 0, 0));
   }
 
   @include test('should layout node with children') {
     .root {
       @include layout(( width: 1000, height: 1000 ));
       .child_a { @include layout(( width: 500, height: 500 )); }
-      .child_b { @include layout(( width: 255, height: 255 )); }
+      .child_b { @include layout(( width: 250, height: 250 )); }
       .child_c { @include layout(( width: 125, height: 125 )); }
     }
     @include render-layout;
-    @include assert-equal((1000, 1000, 0, 0), render-node(".root"));
-    @include assert-equal((500, 500, 0, 0), render-node(".root .child_a"));
-    @include assert-equal((250, 250, 500, 0), render-node(".root .child_b"));
-    @include assert-equal((125, 125, 750, 0), render-node(".root .child_c"));
+    @include assert-equal(render-node(".root"), (1000, 1000, 0, 0));
+    @include assert-equal(render-node(".root .child_a"), (500, 500, 0, 0));
+    @include assert-equal(render-node(".root .child_b"), (250, 250, 500, 0));
+    @include assert-equal(render-node(".root .child_c"), (125, 125, 750, 0));
   }
 }
 
