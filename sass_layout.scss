@@ -21,7 +21,6 @@ $global-frame-map: () !global;
     @if length($property) == 1 { $property: ($property, $property, $property, $property); }
     @if length($property) == 2 { $property: join($property, $property); }
     @if length($property) == 3 { $property: join($property, nth($property, 2)); }
-    /*$layout: map-set($layout, #{$property-name}-top, 100); }*/
     @if map-get($layout, #{$property-name}-top) == null { $layout: map-set($layout, #{$property-name}-top, nth($property, 1)); }
     @if map-get($layout, #{$property-name}-right) == null { $layout: map-set($layout, #{$property-name}-right, nth($property, 2)); }
     @if map-get($layout, #{$property-name}-bottom) == null { $layout: map-set($layout, #{$property-name}-bottom, nth($property, 3)); }
@@ -34,23 +33,19 @@ $global-frame-map: () !global;
 
     $layout: layout-property("margin", $layout);
     $layout: layout-property("padding", $layout);
-
-    $parent-layout: get-layout(parent-node($current-node));
+    $layout: map-set($layout, parent-selector, parent-node($current-node));
 
     @include save-layout($current-node, $layout);
 
-    @if $parent-layout != null {
-        margin: map-get($layout, margin);
-        margin-top: map-get($layout, margin-top);
-        margin-right: map-get($layout, margin-right);
-        margin-bottom: map-get($layout, margin-bottom);
-        margin-left: map-get($layout, margin-left);
-        padding-top: map-get($layout, padding-top);
-        padding-right: map-get($layout, padding-right);
-        padding-bottom: map-get($layout, padding-bottom);
-        padding-left: map-get($layout, padding-left);
-    }
-
+    margin: map-get($layout, margin);
+    margin-top: map-get($layout, margin-top);
+    margin-right: map-get($layout, margin-right);
+    margin-bottom: map-get($layout, margin-bottom);
+    margin-left: map-get($layout, margin-left);
+    padding-top: map-get($layout, padding-top);
+    padding-right: map-get($layout, padding-right);
+    padding-bottom: map-get($layout, padding-bottom);
+    padding-left: map-get($layout, padding-left);
 }
 
 @function parent-node($current-node) {
