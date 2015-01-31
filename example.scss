@@ -1,17 +1,17 @@
+@import "true";
 @import "sass_layout";
 
-.pl-root {
-    @include layout((
-        width: 100,
-        height: 100
-    ));
-
-    .pl-header {
+@include test-module('Layout') {
+  @include test('should layout a single node with width and height') {
+    .root {
         @include layout((
-            margin: 10% 20 5 12,
-            padding: 10,
-            padding-top: 20
+            width: 100,
+            height: 100
         ));
     }
+    @include assert-equal((100, 100, 0, 0), render-node(".root"));
+  }
 }
 
+
+@include report;

@@ -1,32 +1,6 @@
 $global-frame-map: () !global;
 
-@function map-set($map, $key, $value) {
-  $new: ($key: $value);
-  @return map-merge($map, $new);
-}
-
-@mixin save-layout($node, $layout) {
-    $global-frame-map: map-set($global-frame-map, $node, $layout) !global;
-}
-
-@function get-layout($node) {
-    @return map-get($global-frame-map, $node);
-}
-
-@function layout-property($property-name, $layout) {
-    @if map-get($layout, #{$property-name}) == null {
-        $layout: map-set($layout, #{$property-name}, 0);
-    }
-    $property: map-get($layout, #{$property-name});
-    @if length($property) == 1 { $property: ($property, $property, $property, $property); }
-    @if length($property) == 2 { $property: join($property, $property); }
-    @if length($property) == 3 { $property: join($property, nth($property, 2)); }
-    @if map-get($layout, #{$property-name}-top) == null { $layout: map-set($layout, #{$property-name}-top, nth($property, 1)); }
-    @if map-get($layout, #{$property-name}-right) == null { $layout: map-set($layout, #{$property-name}-right, nth($property, 2)); }
-    @if map-get($layout, #{$property-name}-bottom) == null { $layout: map-set($layout, #{$property-name}-bottom, nth($property, 3)); }
-    @if map-get($layout, #{$property-name}-left) == null { $layout: map-set($layout, #{$property-name}-left, nth($property, 4)); }
-    @return $layout;
-}
+@import "_util";
 
 @mixin layout($layout) {
     $current-node: #{&} !default;
@@ -36,31 +10,4 @@ $global-frame-map: () !global;
     $layout: map-set($layout, parent-selector, parent-node($current-node));
 
     @include save-layout($current-node, $layout);
-
-    margin: map-get($layout, margin);
-    margin-top: map-get($layout, margin-top);
-    margin-right: map-get($layout, margin-right);
-    margin-bottom: map-get($layout, margin-bottom);
-    margin-left: map-get($layout, margin-left);
-    padding-top: map-get($layout, padding-top);
-    padding-right: map-get($layout, padding-right);
-    padding-bottom: map-get($layout, padding-bottom);
-    padding-left: map-get($layout, padding-left);
 }
-
-@function parent-node($current-node) {
-    $selector-list: nth(selector-parse($current-node), 1);
-    $selector-length: length($selector-list);
-    @if $selector-length < 2 {
-        @return "";
-    }
-    $parent-selector: nth($selector-list, 1);
-    @if $selector-length == 2 {
-      @return $parent-selector;
-    }
-    @for $i from 2 through ($selector-length - 1){
-        $parent-selector: selector-nest($parent-selector, nth($selector-list, $i));
-    }
-    @return #{$parent-selector};
-}
-
