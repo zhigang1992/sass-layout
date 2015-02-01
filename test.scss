@@ -67,6 +67,16 @@
     @include render-layout;
     @include assert-equal(render-node('.r .c_b'), (300, 150, 0, 100));
   }
+
+  @include test('should layout node based on children main dimensions') {
+    .r {
+      @include layout(( width: 300 ));
+      .c_a { @include layout(( width: 300, height: 200 )) }
+      .c_b { @include layout(( width: 300, height: 150 )) }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r'), (300, 350, 0, 0));
+  }
 }
 
 @include report;

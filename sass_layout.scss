@@ -47,6 +47,7 @@ $global-frame-map: () !global;
     $node: calculate-params-on-direction($node, top);
     $node: calculate-params-on-direction($node, left);
     @include save-layout($node);
+    @include adjust-parent-if-needed($node);
 
     @each $child_selector in map-get($node, child_nodes) {
       $child_node: get-layout($child_selector);
@@ -70,6 +71,17 @@ $global-frame-map: () !global;
     @return map-get($node, height) + map-get($node, margin-top) + map-get($node, margin-bottom);
   } @else {
     @return map-get($node, width) + map-get($node, margin-left) + map-get($node, margin-right);
+  }
+}
+
+@mixin adjust-parent-if-needed($node) {
+  @if has-parent($node) {
+    $parent: parent($node);
+    $parent: map-merge($parent, (
+      width: max(map-get($parent, width), map-get($node, left) + map-get($node, width)),
+      height: max(map-get($parent, height), map-get($node, top) + map-get($node, height))
+    ));
+    @include save-layout($parent);
   }
 }
 
