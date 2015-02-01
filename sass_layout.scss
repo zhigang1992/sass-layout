@@ -33,7 +33,7 @@ $global-frame-map: () !global;
       flex-total: $flexs,
       non-flex-pixels: map-get($parent-node, non-flex-pixels) + $non-flex-pixels,
     ));
-    @if (map-get($parent-node, justify-content) == 'flex-end' and map-get($parent-node, width) > 0 ) {
+    @if (map-get($parent-node, justify-content) == 'flex-end' and map-get($parent-node, $axis) > 0 ) {
       $parent-node: map-set($parent-node, used-#{$start-direction}, map-get($parent-node, $axis) - map-get($parent-node, non-flex-pixels));
     }
     @include save-layout($parent-node);
