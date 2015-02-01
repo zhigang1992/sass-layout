@@ -7,23 +7,26 @@ $global-frame-map: () !global;
 
   $layout: layout-property("margin", $layout);
   $layout: layout-property("padding", $layout);
-  $parent-selector: parent-selector($current-node);
+  $layout: layout-property("used", $layout);
 
-  $layout: map-merge($layout, (
-    parent-selector: $parent-selector,
-    child_nodes: (),
-    selector: $current-node
-  ));
+  $layout: map-merge((
+    width: 0, height: 0, top: 0, left: 0,
+    selector: $current-node,
+    parent-selector: parent-selector($current-node),
+    star-direction: top,
+    child_nodes: ()
+  ), $layout);
+  @include save-layout($layout);
+  @include register-with-parent($layout);
+}
 
-  $parent-node: get-layout($parent-selector);
-
+@mixin register-with-parent($layout) {
+  $parent-node: get-layout(map-get($layout, parent-selector));
   @if $parent-node != null {
     $siblings: map-get($parent-node, child_nodes);
-    $parent-node: map-set($parent-node, child_nodes, append($siblings, $current-node));
+    $parent-node: map-set($parent-node, child_nodes, append($siblings, map-get($layout, selector)));
     @include save-layout($parent-node);
   }
-
-  @include save-layout($layout);
 }
 
 @mixin render-layout() {
@@ -32,14 +35,17 @@ $global-frame-map: () !global;
   }
 }
 
+@function has-parent($node) {
+  @return map-get($node, parent-selector) != "";
+}
+
+@function parent($node) {
+  @return get-layout(map-get($node, parent-selector));
+}
+
 @mixin render-one-layout($node) {
-    $node: map-merge((width: 0, height: 0, top: 0, left: 0), $node);
-
-    $node: calculate-parent($node);
-    
-    $node: map-set($node, top, map-get($node, top) + map-get($node, margin-top));
-    $node: map-set($node, left, map-get($node, left) + map-get($node, margin-left));
-
+    $node: calculate-params-on-direction($node, top);
+    $node: calculate-params-on-direction($node, left);
     @include save-layout($node);
 
     @each $child_selector in map-get($node, child_nodes) {
@@ -48,17 +54,23 @@ $global-frame-map: () !global;
     }
 }
 
-@function calculate-parent($node) {
-    $parent-node: get-layout(map-get($node, parent-selector));
-    @if ($parent-node != null){
-      $used-top: map-get($parent-node, used-top);
-      $used-top: if($used-top == null, 0, $used-top);
-      $node: map-merge($node, (top: $used-top));
-      $used-top: $used-top + map-get($node, height) + map-get($node, margin-top) + map-get($node, margin-bottom);
-      $parent-node: map-set($parent-node, used-top, $used-top);
+@function calculate-params-on-direction($node, $direction) {
+    $used-property: if(has-parent($node), map-get(parent($node), used-#{$direction}), 0);
+    $node: map-merge($node, ($direction: $used-property + map-get($node, margin-#{$direction})));
+    @if has-parent($node) and $direction == map-get($node, star-direction) {
+      $used-property: $used-property + spent-space-on-direction($node, $direction);
+      $parent-node: map-set(parent($node), used-#{$direction}, $used-property);
       $parent-node: save-layout($parent-node);
-    } 
+    }
     @return $node;
+}
+
+@function spent-space-on-direction($node, $direction) {
+  @if $direction == 'top' or $direction == 'bottom' {
+    @return map-get($node, height) + map-get($node, margin-top) + map-get($node, margin-bottom);
+  } @else {
+    @return map-get($node, width) + map-get($node, margin-left) + map-get($node, margin-right);
+  }
 }
 
 @mixin render-child-layout($node) {
