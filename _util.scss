@@ -4,8 +4,13 @@
 }
 
 @mixin save-layout($node) {
+  $node: save-layout($node);
+}
+
+@function save-layout($node) {
   $selector: map-get($node, selector);
   $global-frame-map: map-set($global-frame-map, $selector, $node) !global;
+  @return $node;
 }
 
 @function get-layout($node) {
