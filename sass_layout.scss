@@ -33,17 +33,21 @@ $global-frame-map: () !global;
 }
 
 @mixin render-one-layout($node) {
+    $node: map-merge((width: 0, height: 0, top: 0, left: 0), $node);
+
     $parent-node: get-layout(map-get($node, parent-selector));
     @if ($parent-node != null){
       $usedTop: map-get($parent-node, usedTop);
       $usedTop: if($usedTop == null, 0, $usedTop);
-
       $node: map-merge($node, (top: $usedTop));
       $usedTop: $usedTop + map-get($node, height);
       $parent-node: map-set($parent-node, usedTop, $usedTop);
       @include save-layout($parent-node);
     } 
-    $node: map-merge((width: 0, height: 0, top: 0, left: 0), $node);
+    
+    $node: map-set($node, top, map-get($node, top) + map-get($node, margin-top));
+    $node: map-set($node, left, map-get($node, left) + map-get($node, margin-left));
+
     @include save-layout($node);
 
     @each $child_selector in map-get($node, child_nodes) {
