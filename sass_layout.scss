@@ -7,36 +7,58 @@ $global-frame-map: () !global;
 
   $layout: layout-property("margin", $layout);
   $layout: layout-property("padding", $layout);
-  $layout: map-merge($layout, (child_nodes: ()));
   $parent-selector: parent-selector($current-node);
-  $layout: map-set($layout, parent-selector, $parent-selector);
+
+  $layout: map-merge($layout, (
+    parent-selector: $parent-selector,
+    child_nodes: (),
+    selector: $current-node
+  ));
+
   $parent-node: get-layout($parent-selector);
 
   @if $parent-node != null {
     $siblings: map-get($parent-node, child_nodes);
     $parent-node: map-set($parent-node, child_nodes, append($siblings, $current-node));
-    @include save-layout($parent-selector, $parent-node);
+    @include save-layout($parent-node);
   }
 
-  @include save-layout($current-node, $layout);
+  @include save-layout($layout);
 }
 
 @mixin render-layout() {
   @each $selector, $node in root-nodes() {
-    $node: map-merge($node, (top: 0, left: 0));
-    @include save-layout($selector, $node);
-    @include render-child-layout($node);
+    @include render-one-layout($node);
   }
+}
+
+@mixin render-one-layout($node) {
+    $parent-node: get-layout(map-get($node, parent-selector));
+    @if ($parent-node != null){
+      $usedTop: map-get($parent-node, usedTop);
+      $usedTop: if($usedTop == null, 0, $usedTop);
+
+      $node: map-merge($node, (top: $usedTop));
+      $usedTop: $usedTop + map-get($node, height);
+      $parent-node: map-set($parent-node, usedTop, $usedTop);
+      @include save-layout($parent-node);
+    } 
+    $node: map-merge((width: 0, height: 0, top: 0, left: 0), $node);
+    @include save-layout($node);
+
+    @each $child_selector in map-get($node, child_nodes) {
+      $child_node: get-layout($child_selector);
+      @include render-one-layout($child_node);
+    }
 }
 
 @mixin render-child-layout($node) {
   @if length(map-get($node, child_nodes)) > 0 {
-    $parent-top: 0;
     @each $child_selector in map-get($node, child_nodes) {
       $child_node: get-layout($child_selector);
       $child_node: map-merge($child_node, (top: $parent-top, left: 0));
       $parent-top: $parent-top + map-get($child_node, height);
-      @include save-layout($child_selector, $child_node);
+      @include save-layout($child_node);
       @include render-child-layout($child_node);
     }
   }
