@@ -37,11 +37,11 @@ $global-frame-map: () !global;
 
     $parent-node: get-layout(map-get($node, parent-selector));
     @if ($parent-node != null){
-      $usedTop: map-get($parent-node, usedTop);
-      $usedTop: if($usedTop == null, 0, $usedTop);
-      $node: map-merge($node, (top: $usedTop));
-      $usedTop: $usedTop + map-get($node, height) + map-get($node, margin-top) + map-get($node, margin-bottom);
-      $parent-node: map-set($parent-node, usedTop, $usedTop);
+      $used-top: map-get($parent-node, used-top);
+      $used-top: if($used-top == null, 0, $used-top);
+      $node: map-merge($node, (top: $used-top));
+      $used-top: $used-top + map-get($node, height) + map-get($node, margin-top) + map-get($node, margin-bottom);
+      $parent-node: map-set($parent-node, used-top, $used-top);
       @include save-layout($parent-node);
     } 
     
