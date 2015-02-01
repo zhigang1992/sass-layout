@@ -13,7 +13,7 @@ $global-frame-map: () !global;
     width: 0, height: 0, top: 0, left: 0,
     selector: $current-node,
     parent-selector: parent-selector($current-node),
-    star-direction: top,
+    start-direction: if(map-get($layout, flex-direction) == 'row', left, top),
     child_nodes: ()
   ), $layout);
   @include save-layout($layout);
@@ -57,7 +57,7 @@ $global-frame-map: () !global;
 @function calculate-params-on-direction($node, $direction) {
     $used-property: if(has-parent($node), map-get(parent($node), used-#{$direction}), 0);
     $node: map-merge($node, ($direction: $used-property + map-get($node, margin-#{$direction})));
-    @if has-parent($node) and $direction == map-get($node, star-direction) {
+    @if has-parent($node) and $direction == map-get(parent($node), start-direction) {
       $used-property: $used-property + spent-space-on-direction($node, $direction);
       $parent-node: map-set(parent($node), used-#{$direction}, $used-property);
       $parent-node: save-layout($parent-node);
