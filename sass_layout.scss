@@ -2,6 +2,23 @@ $global-frame-map: () !global;
 
 @import "_util";
 
+@function empty-layout() {
+  $empty-layout: (
+    width: 0,
+    height: 0,
+    top: 0,
+    left: 0,
+    flex-total: 0,
+    flex: 0,
+    non-flex-pixels: 0,
+    child-nodes: ()
+  );
+  $empty-layout: layout-property("margin", $empty-layout);
+  $empty-layout: layout-property("padding", $empty-layout);
+  $empty-layout: layout-property("used", $empty-layout);
+  @return $empty-layout;
+}
+
 @mixin layout($layout) {
   $current-node: #{&} !default;
 
@@ -9,12 +26,12 @@ $global-frame-map: () !global;
   $layout: layout-property("padding", $layout);
   $layout: layout-property("used", $layout);
 
+  $layout: map-merge(empty-layout(), $layout);
   $layout: map-merge((
-    width: 0, height: 0, top: 0, left: 0, flex-total: 0, flex: 0, non-flex-pixels: 0,
     selector: $current-node,
     parent-selector: parent-selector($current-node),
     start-direction: if(map-get($layout, flex-direction) == 'row', left, top),
-    child_nodes: ()
+    child-nodes: ()
   ), $layout);
   @include save-layout($layout);
   @include register-with-parent($layout);
@@ -23,19 +40,16 @@ $global-frame-map: () !global;
 @mixin register-with-parent($layout) {
   $parent-node: get-layout(map-get($layout, parent-selector));
   @if $parent-node != null {
-    $child_nodes: append(map-get($parent-node, child_nodes), map-get($layout, selector));
+    $child-nodes: append(map-get($parent-node, child-nodes), map-get($layout, selector));
     $flexs: map-get($parent-node, flex-total) + map-get($layout, flex);
     $start-direction: map-get($parent-node, start-direction);
     $axis: if(is-vertical($start-direction), height, width);
     $non-flex-pixels: if(map-get($layout, $axis) > 0, spent-space-on-direction($layout, $start-direction), 0);
     $parent-node: map-merge($parent-node, (
-      child_nodes: $child_nodes,
+      child-nodes: $child-nodes,
       flex-total: $flexs,
       non-flex-pixels: map-get($parent-node, non-flex-pixels) + $non-flex-pixels,
     ));
-    @if (map-get($parent-node, justify-content) == 'flex-end' and map-get($parent-node, $axis) > 0 ) {
-      $parent-node: map-set($parent-node, used-#{$start-direction}, map-get($parent-node, $axis) - map-get($parent-node, non-flex-pixels));
-    }
     @include save-layout($parent-node);
   }
 }
@@ -60,10 +74,38 @@ $global-frame-map: () !global;
     @include save-layout($node);
     @include adjust-parent-if-needed($node);
 
-    @each $child_selector in map-get($node, child_nodes) {
-      $child_node: get-layout($child_selector);
+    $child-nodes: prepare-child-nodes-for-justify-content($node);
+    @each $child_node in $child-nodes {
       @include render-one-layout($child_node);
     }
+}
+
+@function prepare-child-nodes-for-justify-content($node) {
+  @if length(map-get($node, child-nodes)) > 0 {
+    $justify-content: map-get($node, justify-content);
+    $fake-node: map-merge(empty-layout(), (
+      parent-selector: map-get($node, selector),
+      flex: 1
+    ));
+    $flex-point-to-add: 0;
+    $child-nodes: ();
+    @each $node-selector in map-get($node, child-nodes) {
+      $child-nodes: append($child-nodes, get-layout($node-selector));
+    }
+    @if ($justify-content == flex-start) {
+      $flex-point-to-add: 1;
+      $child-nodes: append($child-nodes, $fake-node);
+    } @else if($justify-content == flex-end) {
+      $flex-point-to-add: 1;
+      $child-nodes: join(($fake-node,), $child-nodes);
+    }
+    $node: map-merge($node, (
+      flex-total: map-get($node, flex-total) + $flex-point-to-add
+    ));
+    $node: save-layout($node);
+    @return $child-nodes;
+  }
+  @return ();
 }
 
 @function calculate-params-on-direction($node, $direction) {
@@ -107,8 +149,8 @@ $global-frame-map: () !global;
 }
 
 @mixin render-child-layout($node) {
-  @if length(map-get($node, child_nodes)) > 0 {
-    @each $child_selector in map-get($node, child_nodes) {
+  @if length(map-get($node, child-nodes)) > 0 {
+    @each $child_selector in map-get($node, child-nodes) {
       $child_node: get-layout($child_selector);
       $child_node: map-merge($child_node, (top: $parent-top, left: 0));
       $parent-top: $parent-top + map-get($child_node, height);
