@@ -116,6 +116,17 @@
     @include assert-equal(render-node('.r .c_a'), (100, 100, 50, 15));
     @include assert-equal(render-node('.r .c_b'), (100, 100, 170, 30));
   }
+
+  @include test('should layout node with justifyContent: flex-end') {
+    .r {
+      @include layout(( width: 1000, height: 1000, justify-content: flex-end ));
+      .c_a { @include layout(( width: 100, height: 100 )) }
+      .c_b { @include layout(( width: 100, height: 100 )) }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r .c_a'), (100, 100, 800, 0));
+    @include assert-equal(render-node('.r .c_b'), (100, 100, 900, 0));
+  }
 }
 
 @include report;

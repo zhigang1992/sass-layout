@@ -10,7 +10,7 @@ $global-frame-map: () !global;
   $layout: layout-property("used", $layout);
 
   $layout: map-merge((
-    width: 0, height: 0, top: 0, left: 0, flex-total: 0, flex: 0, non-flex-height: 0, non-flex-width: 0,
+    width: 0, height: 0, top: 0, left: 0, flex-total: 0, flex: 0, non-flex-pixels: 0,
     selector: $current-node,
     parent-selector: parent-selector($current-node),
     start-direction: if(map-get($layout, flex-direction) == 'row', left, top),
@@ -25,14 +25,17 @@ $global-frame-map: () !global;
   @if $parent-node != null {
     $child_nodes: append(map-get($parent-node, child_nodes), map-get($layout, selector));
     $flexs: map-get($parent-node, flex-total) + map-get($layout, flex);
-    $non-flex-height: if(map-get($layout, height) > 0, map-get($layout, height) + map-get($layout, margin-top) + map-get($layout, margin-bottom), 0);
-    $non-flex-width: if(map-get($layout, width) > 0, map-get($layout, width) + map-get($layout, margin-left) + map-get($layout, margin-right), 0);
+    $start-direction: map-get($parent-node, start-direction);
+    $axis: if(is-vertical($start-direction), height, width);
+    $non-flex-pixels: if(map-get($layout, $axis) > 0, spent-space-on-direction($layout, $start-direction), 0);
     $parent-node: map-merge($parent-node, (
       child_nodes: $child_nodes,
       flex-total: $flexs,
-      non-flex-height: map-get($parent-node, non-flex-height) + $non-flex-height,
-      non-flex-width: map-get($parent-node, non-flex-width) + $non-flex-width,
+      non-flex-pixels: map-get($parent-node, non-flex-pixels) + $non-flex-pixels,
     ));
+    @if (map-get($parent-node, justify-content) == 'flex-end' and map-get($parent-node, width) > 0 ) {
+      $parent-node: map-set($parent-node, used-#{$start-direction}, map-get($parent-node, $axis) - map-get($parent-node, non-flex-pixels));
+    }
     @include save-layout($parent-node);
   }
 }
@@ -69,7 +72,7 @@ $global-frame-map: () !global;
     @if has-parent($node) and $direction == map-get(parent($node), start-direction) {
       @if map-get($node, flex) > 0 {
         $flexable-space: if(is-vertical($direction), map-get(parent($node), height), map-get(parent($node)));
-        $flexable-space: $flexable-space - map-get(parent($node), if(is-vertical($direction), non-flex-height, non-flex-width));
+        $flexable-space: $flexable-space - map-get(parent($node), non-flex-pixels);
         $flex-total: map-get(parent($node), flex-total);
         $node: map-set($node, if(is-vertical($direction), height, width), $flexable-space * map-get($node, flex) / $flex-total);
       }
