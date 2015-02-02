@@ -111,6 +111,10 @@ $global-frame-map: () !global;
       $child-nodes: join-list-with-item($child-nodes, $fake-node);
       $child-nodes: join(($fake-half-node,), $child-nodes);
       $child-nodes: append($child-nodes, $fake-half-node);
+    } @else if($justify-content == center) {
+      $flex-point-to-add: 2;
+      $child-nodes: join(($fake-node,), $child-nodes);
+      $child-nodes: append($child-nodes, $fake-node);
     }
     $node: map-merge($node, (
       flex-total: map-get($node, flex-total) + $flex-point-to-add
