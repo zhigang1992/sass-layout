@@ -321,6 +321,18 @@
     @include assert-equal(render-node('.r'), (0,0,0,0));
     @include assert-equal(render-node('.r .c_a'), (0,0,0,0));
   }
+
+  @include test('should layout alignItems stretch and margin') {
+    $global-frame-map: () !global;
+    .r {
+      @include layout(( align-items: stretch ));
+      .c_a { @include layout(( margin-left: 10 )) }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r'), (10, 0, 0, 0));
+    @include assert-equal(render-node('.r .c_a'), (0, 0, 0, 10));
+
+  }
 }
 
 @include report;
