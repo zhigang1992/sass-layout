@@ -4,15 +4,15 @@ $global-frame-map: () !global;
 
 @function empty-layout() {
   $empty-layout: (
-    width: 0,
-    height: 0,
-    top: 0,
-    left: 0,
-    flex-total: 0,
-    flex: 0,
-    non-flex-pixels: 0,
-    align-items: 'stretch',
-    child-nodes: ()
+  width: 0,
+  height: 0,
+  top: 0,
+  left: 0,
+  flex-total: 0,
+  flex: 0,
+  non-flex-pixels: 0,
+  align-items: 'stretch',
+  child-nodes: ()
   );
   $empty-layout: layout-property("margin", $empty-layout);
   $empty-layout: layout-property("padding", $empty-layout);
@@ -29,14 +29,14 @@ $global-frame-map: () !global;
 
   $layout: map-merge(empty-layout(), $layout);
   $layout: map-merge((
-    selector: $current-node,
-    parent-selector: parent-selector($current-node),
-    start-direction: if(map-get($layout, flex-direction) == 'row', left, top),
-    cross-start-direction: if(map-get($layout, flex-direction) == 'row', top, left),
-    child-nodes: ()
+  selector: $current-node,
+  parent-selector: parent-selector($current-node),
+  start-direction: if(map-get($layout, flex-direction) == 'row', left, top),
+  cross-start-direction: if(map-get($layout, flex-direction) == 'row', top, left),
+  child-nodes: ()
   ), $layout);
   $layout: map-merge((
-    align-self: if(has-parent($layout), map-get(parent($layout), align-items), 'stretch')
+  align-self: if(has-parent($layout), map-get(parent($layout), align-items), 'stretch')
   ), $layout);
   @include save-layout($layout);
   @include register-with-parent($layout);
@@ -51,9 +51,9 @@ $global-frame-map: () !global;
     $axis: if(is-vertical($start-direction), height, width);
     $non-flex-pixels: if(map-get($layout, flex) == 0, spent-space-on-direction($layout, $start-direction), 0);
     $parent-node: map-merge($parent-node, (
-      child-nodes: $child-nodes,
-      flex-total: $flexs,
-      non-flex-pixels: map-get($parent-node, non-flex-pixels) + $non-flex-pixels,
+    child-nodes: $child-nodes,
+    flex-total: $flexs,
+    non-flex-pixels: map-get($parent-node, non-flex-pixels) + $non-flex-pixels,
     ));
     @include save-layout($parent-node);
   }
@@ -74,51 +74,51 @@ $global-frame-map: () !global;
 }
 
 @mixin render-one-layout($node) {
-    @if map-get($node, bottom) != null {
-      $parent-height: if(has-parent($node), map-get(parent($node), height), 0);
-      $node: map-set($node, top, $parent-height - map-get($node, height) - map-get($node, bottom));
-    }
-    @if map-get($node, right) != null {
-      $parent-width: if(has-parent($node), map-get(parent($node), width), 0);
-      $node: map-set($node, top, $parent-width - map-get($node, width) - map-get($node, right));
-    }
-    $node: calculate-params-on-direction($node, top);
-    $node: calculate-params-on-direction($node, left);
-    @if map-get($node, height) == 0 {
-      $node: map-merge($node, (
-        height: map-get($node, padding-top) + map-get($node, padding-bottom),
-        altered-height: true
-      ));
-    }
-    @if map-get($node, width) == 0 {
-      $node: map-merge($node, (
-        width: map-get($node, padding-left) + map-get($node, padding-right),
-        altered-width: true
-      ));
-    }
-    @include save-layout($node);
-
-    $child-nodes: prepare-child-nodes-for-justify-content($node);
-    @each $child_node in $child-nodes {
-      @include render-one-layout($child_node);
-    }
-
-    $node: get-layout(map-get($node, selector));
-    @include adjust-parent-if-needed($node);
-
+  @if map-get($node, bottom) != null {
+    $parent-height: if(has-parent($node), map-get(parent($node), height), 0);
+    $node: map-set($node, top, $parent-height - map-get($node, height) - map-get($node, bottom));
+  }
+  @if map-get($node, right) != null {
+    $parent-width: if(has-parent($node), map-get(parent($node), width), 0);
+    $node: map-set($node, top, $parent-width - map-get($node, width) - map-get($node, right));
+  }
+  $node: calculate-params-on-direction($node, top);
+  $node: calculate-params-on-direction($node, left);
+  @if map-get($node, height) == 0 {
     $node: map-merge($node, (
-      height: max(map-get($node, height), map-get($node, padding-top) + map-get($node, padding-bottom)),
-      width: max(map-get($node, width), map-get($node, padding-left) + map-get($node, padding-right)),
+    height: map-get($node, padding-top) + map-get($node, padding-bottom),
+    altered-height: true
     ));
-    @include save-layout($node);
+  }
+  @if map-get($node, width) == 0 {
+    $node: map-merge($node, (
+    width: map-get($node, padding-left) + map-get($node, padding-right),
+    altered-width: true
+    ));
+  }
+  @include save-layout($node);
+
+  $child-nodes: prepare-child-nodes-for-justify-content($node);
+  @each $child_node in $child-nodes {
+    @include render-one-layout($child_node);
+  }
+
+  $node: get-layout(map-get($node, selector));
+  @include adjust-parent-if-needed($node);
+
+  $node: map-merge($node, (
+  height: max(map-get($node, height), map-get($node, padding-top) + map-get($node, padding-bottom)),
+  width: max(map-get($node, width), map-get($node, padding-left) + map-get($node, padding-right)),
+  ));
+  @include save-layout($node);
 }
 
 @function prepare-child-nodes-for-justify-content($node) {
   @if length(map-get($node, child-nodes)) > 0 {
     $justify-content: map-get($node, justify-content);
     $fake-node: map-merge(empty-layout(), (
-      parent-selector: map-get($node, selector),
-      flex: 1
+    parent-selector: map-get($node, selector),
+    flex: 1
     ));
     $flex-point-to-add: 0;
     $child-nodes: ();
@@ -138,8 +138,8 @@ $global-frame-map: () !global;
     } @else if($justify-content == space-around) {
       $flex-point-to-add: length($child-nodes);
       $fake-half-node: map-merge(empty-layout(), (
-        parent-selector: map-get($node, selector),
-        flex: 0.5
+      parent-selector: map-get($node, selector),
+      flex: 0.5
       ));
       $child-nodes: join-list-with-item($child-nodes, $fake-node);
       $child-nodes: join(($fake-half-node,), $child-nodes);
@@ -150,7 +150,7 @@ $global-frame-map: () !global;
       $child-nodes: append($child-nodes, $fake-node);
     }
     $node: map-merge($node, (
-      flex-total: map-get($node, flex-total) + $flex-point-to-add
+    flex-total: map-get($node, flex-total) + $flex-point-to-add
     ));
     $node: save-layout($node);
     @return $child-nodes;
@@ -169,57 +169,57 @@ $global-frame-map: () !global;
 }
 
 @function calculate-params-on-direction($node, $direction) {
-    $used-property: if(has-parent($node), map-get(parent($node), used-#{$direction}), 0);
-    $parent-node: parent($node);
-    $direction-value: $used-property + map-get($node, margin-#{$direction}); 
-    @if has-parent($node) {
-      $direction-value: $direction-value + map-get($parent-node, padding-#{$direction});
+  $used-property: if(has-parent($node), map-get(parent($node), used-#{$direction}), 0);
+  $parent-node: parent($node);
+  $direction-value: $used-property + map-get($node, margin-#{$direction}); 
+  @if has-parent($node) {
+    $direction-value: $direction-value + map-get($parent-node, padding-#{$direction});
+  }
+  @if map-get($node, $direction) == 0 {
+    $node: map-merge($node, ($direction: $direction-value));
+  }
+  @if has-parent($node) and $direction == map-get($parent-node, start-direction) {
+    @if map-get($node, flex) > 0 {
+      $flexable-space: if(is-vertical($direction), 
+      map-get($parent-node, height) - map-get($parent-node, padding-top) - map-get($parent-node, padding-bottom), 
+      map-get($parent-node, width) - map-get($parent-node, padding-left) - map-get ($parent-node, padding-right)
+      );
+      $flexable-space: $flexable-space - map-get($parent-node, non-flex-pixels);
+      $flex-total: map-get($parent-node, flex-total);
+      $node: map-set($node, if(is-vertical($direction), height, width), $flexable-space * map-get($node, flex) / $flex-total);
+    }
+    $used-property: $used-property + spent-space-on-direction($node, $direction);
+    $parent-node: map-set($parent-node, used-#{$direction}, $used-property);
+    $parent-node: save-layout($parent-node);
+  }
+  @if has-parent($node) and $direction == map-get($parent-node, cross-start-direction) {
+    $align-self: map-get($node, align-self);
+    $new-position: map-get($node, margin-#{$direction}) + map-get($parent-node, padding-#{$direction});
+    $axis: if(is-vertical($direction), height, width);
+    $parent-size: map-get($parent-node, $axis) - map-get($parent-node, padding-#{$direction}) - map-get($parent-node, padding-#{oppsite-direction($direction)});
+    @if $align-self == flex-end {
+      $new-position: max($new-position, $parent-size - spent-space-on-direction($node, $direction));
+    } @else if $align-self == center {
+      $new-position: max($new-position, ($parent-size - spent-space-on-direction($node, $direction)) / 2);
+    } @else if $align-self == stretch {
+      @if map-get($node, $axis) == 0 {
+        $axis-value: $parent-size - map-get($node, margin-#{$direction}) - map-get($node, margin-#{oppsite-direction($direction)});
+        $node: map-set($node, $axis, max(0, $axis-value));
+      }
     }
     @if map-get($node, $direction) == 0 {
-      $node: map-merge($node, ($direction: $direction-value));
+      $node: map-set($node, $direction, $new-position);
     }
-    @if has-parent($node) and $direction == map-get($parent-node, start-direction) {
-      @if map-get($node, flex) > 0 {
-        $flexable-space: if(is-vertical($direction), 
-          map-get($parent-node, height) - map-get($parent-node, padding-top) - map-get($parent-node, padding-bottom), 
-          map-get($parent-node, width) - map-get($parent-node, padding-left) - map-get ($parent-node, padding-right)
-        );
-        $flexable-space: $flexable-space - map-get($parent-node, non-flex-pixels);
-        $flex-total: map-get($parent-node, flex-total);
-        $node: map-set($node, if(is-vertical($direction), height, width), $flexable-space * map-get($node, flex) / $flex-total);
-      }
-      $used-property: $used-property + spent-space-on-direction($node, $direction);
-      $parent-node: map-set($parent-node, used-#{$direction}, $used-property);
-      $parent-node: save-layout($parent-node);
-    }
-    @if has-parent($node) and $direction == map-get($parent-node, cross-start-direction) {
-      $align-self: map-get($node, align-self);
-      $new-position: map-get($node, margin-#{$direction}) + map-get($parent-node, padding-#{$direction});
-      $axis: if(is-vertical($direction), height, width);
-      $parent-size: map-get($parent-node, $axis) - map-get($parent-node, padding-#{$direction}) - map-get($parent-node, padding-#{oppsite-direction($direction)});
-      @if $align-self == flex-end {
-        $new-position: max($new-position, $parent-size - spent-space-on-direction($node, $direction));
-      } @else if $align-self == center {
-        $new-position: max($new-position, ($parent-size - spent-space-on-direction($node, $direction)) / 2);
-      } @else if $align-self == stretch {
-        @if map-get($node, $axis) == 0 {
-          $axis-value: $parent-size - map-get($node, margin-#{$direction}) - map-get($node, margin-#{oppsite-direction($direction)});
-          $node: map-set($node, $axis, max(0, $axis-value));
-        }
-      }
-      @if map-get($node, $direction) == 0 {
-        $node: map-set($node, $direction, $new-position);
-      }
-    }
-    @return $node;
+  }
+  @return $node;
 }
 
 @function oppsite-direction($direction) {
   $map: (
-    top: bottom,
-    left: right,
-    bottom: top,
-    right: left
+  top: bottom,
+  left: right,
+  bottom: top,
+  right: left
   );
   @return map-get($map, $direction);
 }
