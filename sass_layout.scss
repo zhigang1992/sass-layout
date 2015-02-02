@@ -76,11 +76,19 @@ $global-frame-map: () !global;
 @mixin render-one-layout($node) {
   @if map-get($node, bottom) != null {
     $parent-height: if(has-parent($node), map-get(parent($node), height), 0);
-    $node: map-set($node, top, $parent-height - map-get($node, height) - map-get($node, bottom));
+    @if map-get($node, top) > 0 {
+      $node: map-set($node, height, $parent-height - map-get($node, top) - map-get($node, bottom));
+    } @else {
+      $node: map-set($node, top, $parent-height - map-get($node, height) - map-get($node, bottom));
+    }
   }
   @if map-get($node, right) != null {
     $parent-width: if(has-parent($node), map-get(parent($node), width), 0);
-    $node: map-set($node, top, $parent-width - map-get($node, width) - map-get($node, right));
+    @if map-get($node, left) > 0 {
+      $node: map-set($node, width, $parent-width - map-get($node, left) - map-get($node, right));
+    } @else {
+      $node: map-set($node, left, $parent-width - map-get($node, width) - map-get($node, right));
+    }
   }
   $node: calculate-params-on-direction($node, top);
   $node: calculate-params-on-direction($node, left);
