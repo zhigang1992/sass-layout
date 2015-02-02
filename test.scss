@@ -251,6 +251,14 @@
     @include render-layout;
     @include assert-equal(render-node('.r'), (0, 100, 0, 0));
   }
+
+  @include test('should layout for center') {
+    .r {
+      @include layout(( justify-content: center ))
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r'), (0,0,0,0));
+  }
 }
 
 @include report;
