@@ -97,7 +97,11 @@ $global-frame-map: () !global;
       $child-nodes: append($child-nodes, $fake-node);
     } @else if($justify-content == flex-end) {
       $flex-point-to-add: 1;
+      $new-child-nodes: ();
       $child-nodes: join(($fake-node,), $child-nodes);
+    } @else if($justify-content == space-between) {
+      $flex-point-to-add: length($child-nodes) - 1;
+      $child-nodes: join-list-with-item($child-nodes, $fake-node);
     }
     $node: map-merge($node, (
       flex-total: map-get($node, flex-total) + $flex-point-to-add
@@ -106,6 +110,14 @@ $global-frame-map: () !global;
     @return $child-nodes;
   }
   @return ();
+}
+
+@function join-list-with-item($list, $item) {
+  $new-list: ();
+  @for $i from 1 through length($list) - 1 {
+    $new-list: join($new-list, (nth($list, $i), $item));
+  }
+  @return append($new-list, nth($list, length($list)));
 }
 
 @function calculate-params-on-direction($node, $direction) {
