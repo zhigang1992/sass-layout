@@ -350,6 +350,17 @@
     @include assert-equal(render-node('.r'), (10, 10, 0, 0));
     @include assert-equal(render-node('.r .c_a'), (0, 0, 5, 5));
   }
+
+  @include test('should layout node with padding and a child with margin') {
+    $global-frame-map: () !global;
+    .r {
+      @include layout(( padding: 5 ));
+      .c_a { @include layout(( margin: 5 )) }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r'), (20, 20, 0, 0));
+    @include assert-equal(render-node('.r .c_a'), (0, 0, 10, 10));
+  }
 }
 
 @include report;
