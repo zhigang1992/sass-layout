@@ -77,12 +77,14 @@ $global-frame-map: () !global;
     $node: calculate-params-on-direction($node, top);
     $node: calculate-params-on-direction($node, left);
     @include save-layout($node);
-    @include adjust-parent-if-needed($node);
 
     $child-nodes: prepare-child-nodes-for-justify-content($node);
     @each $child_node in $child-nodes {
       @include render-one-layout($child_node);
     }
+
+    $new-node: get-layout(map-get($node, selector));
+    @include adjust-parent-if-needed($new-node);
 }
 
 @function prepare-child-nodes-for-justify-content($node) {
@@ -168,8 +170,9 @@ $global-frame-map: () !global;
         }
         $axis-value: $parent-size - map-get($node, margin-#{$cross-start-direction}) - map-get($node, margin-#{oppsite-direction($cross-start-direction)});
         $node: map-set($node, $axis, max(0, $axis-value));
+        $new-position: map-get($node, margin-#{$cross-start-direction});
       }
-      $node: map-set($node, $cross-start-direction, $new-position);
+      $node: map-set($node, $cross-start-direction, max($new-position, map-get($node, margin-#{$cross-start-direction})));
     }
     @return $node;
 }

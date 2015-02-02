@@ -3,12 +3,14 @@
 
 @include test-module('Layout') {
   @include test('should layout a single node with width and height') {
+    $global-frame-map: () !global;
     .root { @include layout((width: 100, height: 100)); }
     @include render-layout;
     @include assert-equal(render-node(".root"), (100, 100, 0, 0));
   }
 
   @include test('should layout node with children') {
+    $global-frame-map: () !global;
     .root {
       @include layout(( width: 1000, height: 1000 ));
       .child_a { @include layout(( width: 500, height: 500 )); }
@@ -23,6 +25,7 @@
   }
 
   @include test('should layout node with nested children') {
+    $global-frame-map: () !global;
     .r {
       @include layout(( width:  1000, height: 1000));
       .c_a { @include layout(( width: 500, height: 500 )); }
@@ -39,13 +42,15 @@
   }
 
   @include test('should layout node with margin') {
+    $global-frame-map: () !global;
     .r { @include layout(( width:100, height: 200, margin: 10)) }
     @include render-layout;
     @include assert-equal(render-node('.r'), (100, 200, 10, 10))
   }
 
   @include test('should layout node with several children') {
-    .r { 
+    $global-frame-map: () !global;
+    .r {
       @include layout(( width: 1000, height: 1000, margin: 10 ));
       .c_a { @include layout(( width: 100, height: 100, margin: 50 )) }
       .c_b { @include layout(( width: 100, height: 100, margin: 25 )) }
@@ -59,6 +64,7 @@
   }
 
   @include test('should layout node with row flex direction') {
+    $global-frame-map: () !global;
     .r {
       @include layout(( width: 1000, height: 1000, flex-direction: 'row' ));
       .c_a { @include layout(( width: 100, height: 200 )) }
@@ -69,6 +75,7 @@
   }
 
   @include test('should layout node based on children main dimensions') {
+    $global-frame-map: () !global;
     .r {
       @include layout(( width: 300 ));
       .c_a { @include layout(( width: 300, height: 200 )) }
@@ -79,6 +86,7 @@
   }
 
   @include test('should layout node with just flex') {
+    $global-frame-map: () !global;
     .r {
       @include layout(( width: 1000, height: 1000 ));
       .c_a { @include layout(( width: 100, height: 200 )) }
@@ -89,6 +97,7 @@
   }
 
   @include test('should layout node with flex recursively') {
+    $global-frame-map: () !global;
     .r {
       @include layout(( width: 1000, height: 1000 ));
       .c_a {
@@ -106,6 +115,7 @@
   }
 
   @include test('should layout node with targeted margin') {
+    $global-frame-map: () !global;
     .r {
       @include layout(( width: 1000, height: 1000, margin-top: 10, margin-left: 5 ));
       .c_a { @include layout(( width: 100, height: 100, margin-top: 50, margin-left: 15, margin-bottom: 20 )) }
@@ -118,6 +128,7 @@
   }
 
   @include test('should layout node with justifyContent: flex-end') {
+    $global-frame-map: () !global;
     .r {
       @include layout(( width: 1000, height: 1000, justify-content: flex-end ));
       .c_a { @include layout(( width: 100, height: 100 )) }
@@ -129,6 +140,7 @@
   }
 
   @include test('should layout node with justifyContent: space-between') {
+    $global-frame-map: () !global;
     .r {
       @include layout(( width: 1000, height: 1000, justify-content: space-between ));
       .c_a { @include layout(( width: 100, height: 100 )) }
@@ -140,6 +152,7 @@
   }
 
   @include test('should layout node with justifyContent: space-around') {
+    $global-frame-map: () !global;
     .r {
       @include layout(( width: 1000, height: 1000, justify-content: space-around ));
       .c_a { @include layout(( width: 100, height: 100 )) }
@@ -151,6 +164,7 @@
   }
 
   @include test('should layout node with justifyContent: center') {
+    $global-frame-map: () !global;
     .r {
       @include layout(( width: 1000, height: 1000, justify-content: center ));
       .c_a { @include layout(( width: 100, height: 100 )) }
@@ -162,6 +176,7 @@
   }
 
   @include test('should layout node with flex override height') {
+    $global-frame-map: () !global;
     .r {
       @include layout(( width: 1000, height: 1000 ));
       .c_a { @include layout(( width: 100, height: 100, flex: 1 )) }
@@ -171,6 +186,7 @@
   }
 
   @include test('should layout node with alignItems: flex-start') {
+    $global-frame-map: () !global;
     .r {
       @include layout(( width: 1000, height: 1000, align-items: flex-start ));
       .c_a { @include layout(( width: 200, height: 100 )) }
@@ -182,6 +198,7 @@
   }
 
   @include test('should layout node with alignItems: center') {
+    $global-frame-map: () !global;
     .r {
       @include layout(( width: 1000, height: 1000, align-items: center ));
       .c_a { @include layout(( width: 200, height: 100 )) }
@@ -193,6 +210,7 @@
   }
 
   @include test('should layout node with alignItems: flex-end') {
+    $global-frame-map: () !global;
     .r {
       @include layout(( width: 1000, height: 1000, align-items: flex-end ));
       .c_a { @include layout(( width: 200, height: 100 )) }
@@ -204,6 +222,7 @@
   }
 
   @include test('should layout node with alignSelf overrides alignItems') {
+    $global-frame-map: () !global;
     .r {
       @include layout(( width: 1000, height: 1000, align-items: flex-end ));
       .c_a { @include layout(( width: 200, height: 100 )) }
@@ -215,6 +234,7 @@
   }
 
   @include test('should layout node with alignItem: stretch') {
+    $global-frame-map: () !global;
     .r {
       @include layout(( width: 1000, height: 1000, align-items: 'stretch' ));
       .c_a { @include layout(( height: 100 )) }
@@ -224,6 +244,7 @@
   }
 
   @include test('should layout empty node') {
+    $global-frame-map: () !global;
     .r {
       @include layout(());
       .c_a { @include layout(()) }
@@ -234,6 +255,7 @@
   }
 
   @include test('should layout child with margin') {
+    $global-frame-map: () !global;
     .r {
       @include layout(());
       .c_a { @include layout(( margin: 5 )) }
@@ -243,6 +265,7 @@
   }
 
   @include test('should not shrink children if not enough space') {
+    $global-frame-map: () !global;
     .r {
       @include layout(( height: 100 ));
       .c_a { @include layout(( height: 100 )) }
@@ -253,6 +276,7 @@
   }
 
   @include test('should layout for center') {
+    $global-frame-map: () !global;
     .r {
       @include layout(( justify-content: center ))
     }
@@ -261,12 +285,30 @@
   }
 
   @include test('should layout flex-end taking into account margin') {
+    $global-frame-map: () !global;
     .r {
       @include layout(( height: 100, justify-content: flex-end ));
       .c_a { @include layout(( margin-top: 10 )) }
     }
     @include render-layout;
     @include assert-equal(render-node('.r .c_a'), (0, 0, 100, 0));
+  }
+
+  @include test('should layout alignItems with margin') {
+    $global-frame-map: () !global;
+    .r {
+      @include layout(());
+      .c_a {
+        @include layout(( align-items: flex-end ));
+        .cc_a { @include layout(( margin: 10 )) }
+        .cc_b { @include layout(( height: 100 )) }
+      }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r'), (20, 120, 0, 0));
+    @include assert-equal(render-node('.r .c_a'), (20, 120, 0, 0));
+    @include assert-equal(render-node('.r .c_a .cc_a'), (0, 0, 10, 10));
+    @include assert-equal(render-node('.r .c_a .cc_b'), (0, 100, 20, 20));
   }
 }
 
