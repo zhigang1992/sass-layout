@@ -249,7 +249,7 @@ $global-frame-map: () !global;
 }
 
 @mixin adjust-parent-if-needed($node) {
-  @if has-parent($node) {
+  @if has-parent($node) and map-get($node, position) != absolute {
     $parent: parent($node);
     @if map-get($parent, width) == 0 or map-get($parent, altered-width) == true {
       $width: map-get($node, left) + map-get($node, width) + map-get($node, margin-right) +  map-get($parent, padding-right);

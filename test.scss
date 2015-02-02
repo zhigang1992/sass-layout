@@ -446,6 +446,17 @@
 	@include assert-equal(render-node('.r .c_c'), (250, 0, 0, 250));
   }
 
+  @include test('should layout node with child with position: absolute and margin') {
+    $global-frame-map: () !global;
+    .r { 
+	  @include layout(( )); 
+	  .c_a { @include layout(( margin-right: 15, position: absolute )) }
+	}
+    @include render-layout;
+    @include assert-equal(render-node('.r'), (0, 0, 0, 0));
+    @include assert-equal(render-node('.r .c_a'), (0, 0, 0, 0));
+  }
+
 }
 
 @include report;
