@@ -180,6 +180,58 @@
     @include assert-equal(render-node('.r .c_a'), (200, 100, 0, 0));
     @include assert-equal(render-node('.r .c_b'), (100, 100, 100, 0));
   }
+
+  @include test('should layout node with alignItems: center') {
+    .r {
+      @include layout(( width: 1000, height: 1000, align-items: center ));
+      .c_a { @include layout(( width: 200, height: 100 )) }
+      .c_b { @include layout(( width: 100, height: 100 )) }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r .c_a'), (200, 100, 0, 400));
+    @include assert-equal(render-node('.r .c_b'), (100, 100, 100, 450));
+  }
+
+  @include test('should layout node with alignItems: flex-end') {
+    .r {
+      @include layout(( width: 1000, height: 1000, align-items: flex-end ));
+      .c_a { @include layout(( width: 200, height: 100 )) }
+      .c_b { @include layout(( width: 100, height: 100 )) }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r .c_a'), (200, 100, 0, 800));
+    @include assert-equal(render-node('.r .c_b'), (100, 100, 100, 900));
+  }
+
+  @include test('should layout node with alignSelf overrides alignItems') {
+    .r {
+      @include layout(( width: 1000, height: 1000, align-items: flex-end ));
+      .c_a { @include layout(( width: 200, height: 100 )) }
+      .c_b { @include layout(( width: 100, height: 100, align-self: center )) }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r .c_a'), (200, 100, 0, 800));
+    @include assert-equal(render-node('.r .c_b'), (100, 100, 100, 450));
+  }
+
+  @include test('should layout node with alignItem: stretch') {
+    .r {
+      @include layout(( width: 1000, height: 1000, align-items: 'stretch' ));
+      .c_a { @include layout(( height: 100 )) }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r .c_a'), (1000, 100, 0, 0));
+  }
+
+  @include test('should layout empty node') {
+    .r {
+      @include layout(());
+      .c_a { @include layout(()) }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r'), (0,0,0,0));
+    @include assert-equal(render-node('.r .c_a'), (0,0,0,0));
+  }
 }
 
 @include report;

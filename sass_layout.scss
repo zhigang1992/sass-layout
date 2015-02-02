@@ -11,6 +11,7 @@ $global-frame-map: () !global;
     flex-total: 0,
     flex: 0,
     non-flex-pixels: 0,
+    align-items: 'stretch',
     child-nodes: ()
   );
   $empty-layout: layout-property("margin", $empty-layout);
@@ -31,14 +32,18 @@ $global-frame-map: () !global;
     selector: $current-node,
     parent-selector: parent-selector($current-node),
     start-direction: if(map-get($layout, flex-direction) == 'row', left, top),
+    cross-start-direction: if(map-get($layout, flex-direction) == 'row', top, left),
     child-nodes: ()
+  ), $layout);
+  $layout: map-merge((
+    align-self: if(has-parent($layout), map-get(parent($layout), align-items), 'stretch')
   ), $layout);
   @include save-layout($layout);
   @include register-with-parent($layout);
 }
 
 @mixin register-with-parent($layout) {
-  $parent-node: get-layout(map-get($layout, parent-selector));
+  $parent-node: parent($layout);
   @if $parent-node != null {
     $child-nodes: append(map-get($parent-node, child-nodes), map-get($layout, selector));
     $flexs: map-get($parent-node, flex-total) + map-get($layout, flex);
@@ -147,7 +152,35 @@ $global-frame-map: () !global;
       $parent-node: map-set(parent($node), used-#{$direction}, $used-property);
       $parent-node: save-layout($parent-node);
     }
+    @if has-parent($node) and $direction == map-get(parent($node), cross-start-direction) {
+      $cross-start-direction: map-get(parent($node), cross-start-direction);
+      $align-self: map-get($node, align-self);
+      $new-position: map-get($node, margin-#{$cross-start-direction});
+      $axis: if(is-vertical($cross-start-direction), height, width);
+      $parent-size: map-get(parent($node), $axis);
+      @if $align-self == flex-end {
+        $new-position: $parent-size - spent-space-on-direction($node, $cross-start-direction);
+      } @else if $align-self == center {
+        $new-position: ($parent-size - spent-space-on-direction($node, $cross-start-direction)) / 2;
+      } @else if $align-self == stretch {
+        @if map-get($node, $axis) > 0 {
+          @return $node;
+        }
+        $node: map-set($node, $axis, $parent-size - map-get($node, margin-#{$cross-start-direction}) - map-get($node, margin-#{oppsite-direction($cross-start-direction)}));
+      }
+      $node: map-set($node, $cross-start-direction, $new-position);
+    }
     @return $node;
+}
+
+@function oppsite-direction($direction) {
+  $map: (
+    top: bottom,
+    left: right,
+    bottom: top,
+    right: left
+  );
+  @return map-get($map, $direction);
 }
 
 @function spent-space-on-direction($node, $direction) {
