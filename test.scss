@@ -310,6 +310,17 @@
     @include assert-equal(render-node('.r .c_a .cc_a'), (0, 0, 10, 10));
     @include assert-equal(render-node('.r .c_a .cc_b'), (0, 100, 20, 20));
   }
+
+  @include test('should layout flex inside of an empty element') {
+    $global-frame-map: () !global;
+    .r {
+      @include layout(());
+      .c_a { @include layout((flex: 1)) }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r'), (0,0,0,0));
+    @include assert-equal(render-node('.r .c_a'), (0,0,0,0));
+  }
 }
 
 @include report;
