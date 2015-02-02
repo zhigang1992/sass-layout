@@ -241,6 +241,16 @@
     @include render-layout;
     @include assert-equal(render-node('.r'), (10, 10, 0, 0));
   }
+
+  @include test('should not shrink children if not enough space') {
+    .r {
+      @include layout(( height: 100 ));
+      .c_a { @include layout(( height: 100 )) }
+      .c_b { @include layout(( height: 200 )) }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r'), (0, 100, 0, 0));
+  }
 }
 
 @include report;
