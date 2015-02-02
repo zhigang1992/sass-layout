@@ -152,8 +152,10 @@ $global-frame-map: () !global;
 
 @function join-list-with-item($list, $item) {
   $new-list: ();
-  @for $i from 1 through length($list) - 1 {
-    $new-list: join($new-list, (nth($list, $i), $item));
+  @if length($list) > 1 {
+    @for $i from 1 through length($list) - 1 {
+      $new-list: join($new-list, (nth($list, $i), $item));
+    }
   }
   @return append($new-list, nth($list, length($list)));
 }
