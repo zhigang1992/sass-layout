@@ -232,6 +232,15 @@
     @include assert-equal(render-node('.r'), (0,0,0,0));
     @include assert-equal(render-node('.r .c_a'), (0,0,0,0));
   }
+
+  @include test('should layout child with margin') {
+    .r {
+      @include layout(());
+      .c_a { @include layout(( margin: 5 )) }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r'), (10, 10, 0, 0));
+  }
 }
 
 @include report;

@@ -166,7 +166,8 @@ $global-frame-map: () !global;
         @if map-get($node, $axis) > 0 {
           @return $node;
         }
-        $node: map-set($node, $axis, $parent-size - map-get($node, margin-#{$cross-start-direction}) - map-get($node, margin-#{oppsite-direction($cross-start-direction)}));
+        $axis-value: $parent-size - map-get($node, margin-#{$cross-start-direction}) - map-get($node, margin-#{oppsite-direction($cross-start-direction)});
+        $node: map-set($node, $axis, max(0, $axis-value));
       }
       $node: map-set($node, $cross-start-direction, $new-position);
     }
@@ -199,8 +200,8 @@ $global-frame-map: () !global;
   @if has-parent($node) {
     $parent: parent($node);
     $parent: map-merge($parent, (
-      width: max(map-get($parent, width), map-get($node, left) + map-get($node, width)),
-      height: max(map-get($parent, height), map-get($node, top) + map-get($node, height))
+      width: max(map-get($parent, width), map-get($node, left) + map-get($node, width) + map-get($node, margin-right)),
+      height: max(map-get($parent, height), map-get($node, top) + map-get($node, height) + map-get($node, margin-bottom))
     ));
     @include save-layout($parent);
   }
