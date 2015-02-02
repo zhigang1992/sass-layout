@@ -102,6 +102,15 @@ $global-frame-map: () !global;
     } @else if($justify-content == space-between) {
       $flex-point-to-add: length($child-nodes) - 1;
       $child-nodes: join-list-with-item($child-nodes, $fake-node);
+    } @else if($justify-content == space-around) {
+      $flex-point-to-add: length($child-nodes);
+      $fake-half-node: map-merge(empty-layout(), (
+        parent-selector: map-get($node, selector),
+        flex: 0.5
+      ));
+      $child-nodes: join-list-with-item($child-nodes, $fake-node);
+      $child-nodes: join(($fake-half-node,), $child-nodes);
+      $child-nodes: append($child-nodes, $fake-half-node);
     }
     $node: map-merge($node, (
       flex-total: map-get($node, flex-total) + $flex-point-to-add
