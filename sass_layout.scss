@@ -76,6 +76,18 @@ $global-frame-map: () !global;
 @mixin render-one-layout($node) {
     $node: calculate-params-on-direction($node, top);
     $node: calculate-params-on-direction($node, left);
+    @if map-get($node, height) == 0 {
+      $node: map-merge($node, (
+        height: map-get($node, padding-top) + map-get($node, padding-bottom),
+        altered-height: true
+      ));
+    }
+    @if map-get($node, width) == 0 {
+      $node: map-merge($node, (
+        width: map-get($node, padding-left) + map-get($node, padding-right),
+        altered-width: true
+      ));
+    }
     @include save-layout($node);
 
     $child-nodes: prepare-child-nodes-for-justify-content($node);
