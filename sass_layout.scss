@@ -199,10 +199,16 @@ $global-frame-map: () !global;
 @mixin adjust-parent-if-needed($node) {
   @if has-parent($node) {
     $parent: parent($node);
-    $parent: map-merge($parent, (
-      width: max(map-get($parent, width), map-get($node, left) + map-get($node, width) + map-get($node, margin-right)),
-      height: max(map-get($parent, height), map-get($node, top) + map-get($node, height) + map-get($node, margin-bottom))
-    ));
+    @if map-get($parent, width) == 0 or map-get($parent, altered-width) == true {
+      $width: map-get($node, left) + map-get($node, width) + map-get($node, margin-right);
+      $parent: map-set($parent, width, $width);
+      $parent: map-set($parent, altered-width, true);
+    }
+    @if map-get($parent, height) == 0 or map-get($parent, altered-height) == true {
+      $height: map-get($node, top) + map-get($node, height) + map-get($node, margin-bottom);
+      $parent: map-set($parent, height, $height);
+      $parent: map-set($parent, altered-height , true);
+    }
     @include save-layout($parent);
   }
 }
