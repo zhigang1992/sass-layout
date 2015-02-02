@@ -431,6 +431,21 @@
     @include assert-equal(render-node('.r'), (0, 0, 10, 0));
   }
 
+  @include test('should layout node with position: absolute') {
+    $global-frame-map: () !global;
+    .r { 
+      @include layout(( width: 500, flex-direction: row)); 
+	  .c_a { @include layout(( flex: 1 )) }
+	  .c_b { @include layout(( position: absolute, width: 50 )) }
+	  .c_c { @include layout(( flex: 1 )) }
+	}
+    @include render-layout;
+    @include assert-equal(render-node('.r'), (500, 0, 0, 0));
+	@include assert-equal(render-node('.r .c_a'), (250, 0, 0, 0));
+	@include assert-equal(render-node('.r .c_b'), (50, 0, 0, 250));
+	@include assert-equal(render-node('.r .c_c'), (250, 0, 0, 250));
+  }
+
 }
 
 @include report;

@@ -49,7 +49,7 @@ $global-frame-map: () !global;
     $flexs: map-get($parent-node, flex-total) + map-get($layout, flex);
     $start-direction: map-get($parent-node, start-direction);
     $axis: if(is-vertical($start-direction), height, width);
-    $non-flex-pixels: if(map-get($layout, flex) == 0, spent-space-on-direction($layout, $start-direction), 0);
+    $non-flex-pixels: if(map-get($layout, flex) == 0 and map-get($layout, position) != absolute, spent-space-on-direction($layout, $start-direction), 0);
     $parent-node: map-merge($parent-node, (
     child-nodes: $child-nodes,
     flex-total: $flexs,
@@ -188,17 +188,21 @@ $global-frame-map: () !global;
   }
   @if has-parent($node) and $direction == map-get($parent-node, start-direction) {
     @if map-get($node, flex) > 0 {
-      $flexable-space: if(is-vertical($direction), 
-      map-get($parent-node, height) - map-get($parent-node, padding-top) - map-get($parent-node, padding-bottom), 
-      map-get($parent-node, width) - map-get($parent-node, padding-left) - map-get ($parent-node, padding-right)
+      $flexable-space: if(
+        is-vertical($direction), 
+        map-get($parent-node, height) - map-get($parent-node, padding-top) - map-get($parent-node, padding-bottom), 
+        map-get($parent-node, width) - map-get($parent-node, padding-left) - map-get($parent-node, padding-right)
       );
+
       $flexable-space: $flexable-space - map-get($parent-node, non-flex-pixels);
       $flex-total: map-get($parent-node, flex-total);
       $node: map-set($node, if(is-vertical($direction), height, width), $flexable-space * map-get($node, flex) / $flex-total);
     }
-    $used-property: $used-property + spent-space-on-direction($node, $direction);
-    $parent-node: map-set($parent-node, used-#{$direction}, $used-property);
-    $parent-node: save-layout($parent-node);
+    @if map-get($node, position) != absolute {
+      $used-property: $used-property + spent-space-on-direction($node, $direction);
+      $parent-node: map-set($parent-node, used-#{$direction}, $used-property);
+      $parent-node: save-layout($parent-node);
+    }
   }
   @if has-parent($node) and $direction == map-get($parent-node, cross-start-direction) {
     $align-self: map-get($node, align-self);
