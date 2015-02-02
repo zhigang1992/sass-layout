@@ -49,7 +49,7 @@ $global-frame-map: () !global;
     $flexs: map-get($parent-node, flex-total) + map-get($layout, flex);
     $start-direction: map-get($parent-node, start-direction);
     $axis: if(is-vertical($start-direction), height, width);
-    $non-flex-pixels: if(map-get($layout, $axis) > 0 and map-get($layout, flex) == 0, spent-space-on-direction($layout, $start-direction), 0);
+    $non-flex-pixels: if(map-get($layout, flex) == 0, spent-space-on-direction($layout, $start-direction), 0);
     $parent-node: map-merge($parent-node, (
       child-nodes: $child-nodes,
       flex-total: $flexs,

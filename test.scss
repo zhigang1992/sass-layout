@@ -259,6 +259,15 @@
     @include render-layout;
     @include assert-equal(render-node('.r'), (0,0,0,0));
   }
+
+  @include test('should layout flex-end taking into account margin') {
+    .r {
+      @include layout(( height: 100, justify-content: flex-end ));
+      .c_a { @include layout(( margin-top: 10 )) }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r .c_a'), (0, 0, 100, 0));
+  }
 }
 
 @include report;
