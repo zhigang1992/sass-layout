@@ -383,6 +383,21 @@
     @include assert-equal(render-node('.r'), (120, 120, 0, 0));
     @include assert-equal(render-node('.r .c_a'), (20, 20, 50, 50));
   }
+
+  @include test('should layout node with stretch and child with margin') {
+    $global-frame-map: () !global;
+    .r {
+      @include layout(( ));
+      .c_a { 
+        @include layout(( align-self: stretch ));
+        .cc_a { @include layout(( margin: 16 )) }
+      }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r'), (32, 32, 0, 0));
+    @include assert-equal(render-node('.r .c_a'), (32, 32, 0, 0));
+    @include assert-equal(render-node('.r .c_a .cc_a'), (0, 0, 16, 16));
+  }
 }
 
 @include report;
