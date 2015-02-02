@@ -372,6 +372,17 @@
     @include assert-equal(render-node('.r'), (20, 20, 0, 0));
     @include assert-equal(render-node('.r .c_a'), (20, 20, 0, 0));
   }
+
+  @include test('should layout node with inner & outer padding and stretch') {
+    $global-frame-map: () !global;
+    .r {
+      @include layout(( padding: 50 ));
+      .c_a { @include layout(( padding: 10, align-self: stretch )) }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r'), (120, 120, 0, 0));
+    @include assert-equal(render-node('.r .c_a'), (20, 20, 50, 50));
+  }
 }
 
 @include report;
