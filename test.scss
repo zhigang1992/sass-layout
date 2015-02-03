@@ -468,6 +468,37 @@
     @include assert-equal(render-node('.r .c_a'), (12, 0, 0, 0));
   }
 
+  @include test('should work with height smaller than paddingBottom') {
+    $global-frame-map: () !global;
+    .r {@include layout(( height: 5, padding-bottom: 20))}
+    @include render-layout;
+    @include assert-equal(render-node('.r'), (0, 20, 0, 0));
+  }
+
+  @include test('should work with width smaller than paddingLeft') {
+    $global-frame-map: () !global;
+    .r {@include layout(( width: 5, padding-left: 20))}
+    @include render-layout;
+    @include assert-equal(render-node('.r'), (20, 0, 0, 0));
+  }
+
+  @include test('should layout node with specified width and stretch') {
+    $global-frame-map: () !global;
+    .r {
+      @include layout(());
+      .c_a {
+        @include layout(());
+        .cc_a { @include layout(( width: 400 )) }
+      }
+      .c_b { @include layout(( width: 200, align-self: stretch )) }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r'), (400, 0, 0, 0));
+    @include assert-equal(render-node('.r .c_a'), (400, 0, 0, 0));
+    @include assert-equal(render-node('.r .c_a .cc_a'), (400, 0, 0, 0));
+    @include assert-equal(render-node('.r .c_b'), (200, 0, 0, 0));
+  }
+
 }
 
 @include report;

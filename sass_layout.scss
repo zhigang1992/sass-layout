@@ -253,11 +253,13 @@ $global-frame-map: () !global;
     $parent: parent($node);
     @if map-get($parent, width) == 0 or map-get($parent, altered-width) == true {
       $width: map-get($node, left) + map-get($node, width) + map-get($node, margin-right) +  map-get($parent, padding-right);
+      $width: max(map-get($parent, width), $width);
       $parent: map-set($parent, width, $width);
       $parent: map-set($parent, altered-width, true);
     }
     @if map-get($parent, height) == 0 or map-get($parent, altered-height) == true {
       $height: map-get($node, top) + map-get($node, height) + map-get($node, margin-bottom) + map-get($parent, padding-bottom);
+      $height: max(map-get($parent, height), $height);
       $parent: map-set($parent, height, $height);
       $parent: map-set($parent, altered-height , true);
     }
