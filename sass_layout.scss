@@ -70,6 +70,14 @@ $global-frame-map: () !global;
   @each $selector, $node in root-nodes() {
     @include render-one-layout($node);
   }
+  @each $selector, $node in non-root-nodes() {
+    #{$selector} {
+      top: map-get($node, top);
+      left: map-get($node, left);
+      width: map-get($node, width);
+      height: map-get($node, height);
+    }
+  }
 }
 
 @function has-parent($node) {
@@ -294,4 +302,14 @@ $global-frame-map: () !global;
     }
   }
   @return $root-nodes;
+}
+
+@function non-root-nodes() {
+  $non-root-nodes: ();
+  @each $selector, $node in $global-frame-map {
+    @if map-get($node, parent-selector) != "" {
+      $non-root-nodes: map-set($non-root-nodes, $selector, $node);
+    }
+  }
+  @return $non-root-nodes;
 }
