@@ -23,6 +23,7 @@ $global-frame-map: () !global;
 @mixin layout($layout) {
   $current-node: #{&} !default;
 
+  @content;
   $layout: layout-property("margin", $layout);
   $layout: layout-property("padding", $layout);
   $layout: layout-property("used", $layout);
@@ -76,8 +77,29 @@ $global-frame-map: () !global;
       left: map-get($node, left);
       width: map-get($node, width);
       height: map-get($node, height);
+      @each $attribute, $value in $node {
+        @if str-slice($attribute, 1, 1) == '_' {
+          #{str-slice($attribute, 2, str-length($attribute))}: render-value($node, $value);
+        }
+      }
     }
   }
+}
+
+@function render-value($node, $value) {
+  $result:  nth($value, 1);
+  @if map-has-key($node, $result) {
+    $result: map-get($node, $result);
+  } @else if $result == max-height-weight {
+    $result: max(map-get($node, height), map-get($node, width));
+  } 
+  @if length($value) > 1 {
+    $result: $result * nth($value, 2);
+  }
+  @if length($value) > 2 {
+    $result: $result + nth($value, 3);
+  }
+  @return $result;
 }
 
 @function has-parent($node) {
@@ -132,6 +154,10 @@ $global-frame-map: () !global;
   $node: map-merge($node, (
   height: max(map-get($node, height), map-get($node, padding-top) + map-get($node, padding-bottom)),
   width: max(map-get($node, width), map-get($node, padding-left) + map-get($node, padding-right)),
+  ));
+  $node: map-merge($node, (
+  right: map-get($node, left) + map-get($node, width),
+  bottom: map-get($node, top) + map-get($node, height)
   ));
   @include save-layout($node);
 }
