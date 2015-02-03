@@ -27,6 +27,13 @@ $global-frame-map: () !global;
   $layout: layout-property("padding", $layout);
   $layout: layout-property("used", $layout);
 
+  @if map-get($layout, top) != null {
+    $layout: map-set($layout, top, map-get($layout, top) + map-get($layout, margin-top));
+  }
+
+  @if map-get($layout, left) != null {
+    $layout: map-set($layout, left, map-get($layout, left) + map-get($layout, margin-left));
+  }
   $layout: map-merge(empty-layout(), $layout);
   $layout: map-merge((
   selector: $current-node,

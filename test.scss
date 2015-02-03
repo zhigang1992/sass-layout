@@ -499,6 +499,54 @@
     @include assert-equal(render-node('.r .c_b'), (200, 0, 0, 0));
   }
 
+  @include test('should layout node with padding and child with position absolute') {
+    $global-frame-map: () !global;
+    .r {
+      @include layout(( padding: 5 ));
+      .c_a { @include layout(( position: absolute )) }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r'), (10, 10, 0, 0));
+    @include assert-equal(render-node('.r .c_a'), (0, 0, 5, 5))
+  }
+
+  @include test('should layout node with position absolute, top and left') {
+    $global-frame-map: () !global;
+    .r {
+      @include layout(( ));
+      .c_a { @include layout(( height: 100 )) }
+      .c_b { @include layout(( position: absolute, top: 10, left: 10)) }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r'), (0, 100, 0, 0));
+    @include assert-equal(render-node('.r .c_a'), (0, 100, 0, 0));
+    @include assert-equal(render-node('.r .c_b'), (0, 0, 10, 10));
+  }
+
+  @include test('should layout node with padding and child position absolute, left') {
+    $global-frame-map: () !global;
+    .r {
+      @include layout(( padding: 20 ));
+      .c_a { @include layout(( left: 5, position: absolute )) }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r'), (40, 40, 0, 0));
+    @include assert-equal(render-node('.r .c_a'), (0, 0, 20, 5));
+  }
+
+  @include test('should layout node with padding and child position absolute, left') {
+    $global-frame-map: () !global;
+    .r {
+      @include layout(( ));
+      .c_a { @include layout(( top: 5, margin-top: 5, position: absolute )) }
+    }
+    @include render-layout;
+    @include assert-equal(render-node('.r'), (0, 0, 0, 0));
+    @include assert-equal(render-node('.r .c_a'), (0, 0, 10, 0));
+  }
+
+
+
 }
 
 @include report;
