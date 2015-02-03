@@ -1,5 +1,5 @@
 @import "true";
-@import "sass_layout";
+@import "sass-layout";
 
 @include test-module('Layout') {
   @include test('should layout a single node with width and height') {
