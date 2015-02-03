@@ -1,3 +1,9 @@
+@function is-percentage($number) {
+  $string: inspect($number);
+  $last-letter: str-slice($string, str-length($string), str-length($string));
+  @return $last-letter == '%';
+}
+
 @function map-set($map, $key, $value) {
   $new: ($key: $value);
   @return map-merge($map, $new);
