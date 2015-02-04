@@ -251,6 +251,7 @@ $global-frame-map: () !global;
 
       $flexable-space: $flexable-space - map-get($parent-node, non-flex-pixels);
       $flex-total: map-get($parent-node, flex-total);
+      $flexable-space: $flexable-space - if(is-vertical($direction), map-get($node, margin-top) + map-get($node, margin-bottom), map-get($node, margin-left) + map-get($node, margin-right));
       $node: map-set($node, if(is-vertical($direction), height, width), $flexable-space * map-get($node, flex) / $flex-total);
     }
     @if map-get($node, position) != absolute {
